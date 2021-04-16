@@ -1,0 +1,15 @@
+defaults:
+  run:
+    shell: "bash"
+
+name: "ci"
+
+on:
+  push:
+    branches: ["master"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["master"]
+
+env:
+  AWS_DEFAULT_REGION: "us-east-2"
