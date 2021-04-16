@@ -1,53 +1,86 @@
-defaults:
-  run:
-    shell: "bash"
-    
-name: CI
+name: build-and-deploy
 
-
-
+# Controls when the action will run. Triggers the workflow on push 
+# but only for the master branch.
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
-env:
-  AWS_DEFAULT_REGION: "us-east-2"
-  
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  commitizen:
-    name: "Check commit message"
-    runs-on: "ubuntu-latest"
+  # This workflow contains two jobs called "build" and "deploy"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: "actions/checkout@v2.3.4"
-      - name: "Fetch ${{ github.base_ref }}"
-        if: "github.event_name == 'pull_request'"
-        run: |
-          set -e
-          git fetch --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/heads/${{ github.base_ref }}
-          git fetch --prune --unshallow
-
-      - name: "Install Python"
-        if: "!startsWith(github.ref, 'refs/tags/')"
-        uses: "actions/setup-python@v2.2.1"
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        
+      # Set up Python
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
         with:
-          python-version: "${{ env.PYTHON_VERSION }}"
-
-      - name: "Install commitizen"
-        if: "!startsWith(github.ref, 'refs/tags/')"
-        run: "pip install commitizen==${{ env.COMMITIZEN_VERSION }}"
-
-      - name: "Check pull request commit messages"
-        if: "github.event_name == 'pull_request'"
+          python-version: '3.8'
+          
+      # Install nbconvert to convert notebook file to python script
+      - name: Install nbconvert
         run: |
-          set -e
-          for commit in $(git log --pretty=%H ${{ github.base_ref }}..HEAD); do
-            echo "Checking commit: ${commit}"
-            cz check -m "$(git log -1 --pretty=%B ${commit})"
-          done
+          python -m pip install --upgrade pip
+          pip install nbconvert
+      # Convert notebook file to python
+      - name: Convert notebook
+        run: jupyter nbconvert --to python traffic.ipynb
 
-      - name: "Check last commit message"
-        if: "github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/')"
-        run: 'cz check -m "$(git log -1 --pretty=%B)"'
+      # Persist python script for use between jobs
+      - name: Upload python script
+        uses: actions/upload-artifact@v2
+        with:
+          name: traffic.py
+          path: traffic.py
+  
+  # Upload python script to S3 and update Glue job
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download python script from build
+        uses: actions/download-artifact@v2
+        with:
+          name: traffic.py
+          
+      # Install the AWS CLI
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+          
+      # Set up credentials used by AWS CLI
+      - name: Set up AWS credentials
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          mkdir -p ~/.aws
+          touch ~/.aws/credentials
+          echo "[default]
+          aws_access_key_id = $AWS_ACCESS_KEY_ID
+          aws_secret_access_key = $AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
+          
+      # Copy the file to the S3 bucket
+      - name: Upload to S3
+        run: aws s3 cp traffic.py s3://${{secrets.S3_BUCKET}}/traffic_${GITHUB_SHA}.py --region us-east-1
+      
+      # Update the Glue job to use the new script
+      - name: Update Glue job
+        run: |
+          aws glue update-job --job-name "Traffic ETL" --job-update \
+            "Role=AWSGlueServiceRole-TrafficCrawler,Command={Name=glueetl,ScriptLocation=s3://${{secrets.S3_BUCKET}}/traffic_${GITHUB_SHA}.py},Connections={Connections=redshift}" \
+            --region us-east-1
+      
+      # Remove stored credentials file
+      - name: Cleanup
+        run: rm -rf ~/.aws
