@@ -1,0 +1,153 @@
+{
+  "version": "9.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "LambdaCronExample": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LambdaCronExample.template.json"
+      },
+      "metadata": {
+        "/LambdaCronExample/Singleton/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonServiceRoleDDD815CD",
+            "trace": [
+              "new Role (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/aws-iam/lib/role.js:72:22)",
+              "new Function (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/aws-lambda/lib/function.js:79:35)",
+              "obj._wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:8154:58)",
+              "Kernel._wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:8582:24)",
+              "Kernel._create (/tmp/tmpejfr51s8/lib/program.js:8154:34)",
+              "Kernel.create (/tmp/tmpejfr51s8/lib/program.js:7895:29)",
+              "KernelHost.processRequest (/tmp/tmpejfr51s8/lib/program.js:9479:36)",
+              "KernelHost.run (/tmp/tmpejfr51s8/lib/program.js:9442:22)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/tmpejfr51s8/lib/program.js:9443:46)",
+              "runCallback (timers.js:705:18)",
+              "tryOnImmediate (timers.js:676:5)",
+              "processImmediate (timers.js:658:5)"
+            ]
+          }
+        ],
+        "/LambdaCronExample/Singleton/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Singleton8C7B99F3",
+            "trace": [
+              "new Function (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/aws-lambda/lib/function.js:135:26)",
+              "obj._wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:8154:58)",
+              "Kernel._wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:8582:24)",
+              "Kernel._create (/tmp/tmpejfr51s8/lib/program.js:8154:34)",
+              "Kernel.create (/tmp/tmpejfr51s8/lib/program.js:7895:29)",
+              "KernelHost.processRequest (/tmp/tmpejfr51s8/lib/program.js:9479:36)",
+              "KernelHost.run (/tmp/tmpejfr51s8/lib/program.js:9442:22)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/tmpejfr51s8/lib/program.js:9443:46)",
+              "runCallback (timers.js:705:18)",
+              "tryOnImmediate (timers.js:676:5)",
+              "processImmediate (timers.js:658:5)"
+            ]
+          }
+        ],
+        "/LambdaCronExample/Rule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Rule4C995B7F",
+            "trace": [
+              "new Rule (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/aws-events/lib/rule.js:33:26)",
+              "obj._wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:8154:58)",
+              "Kernel._wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:8582:24)",
+              "Kernel._create (/tmp/tmpejfr51s8/lib/program.js:8154:34)",
+              "Kernel.create (/tmp/tmpejfr51s8/lib/program.js:7895:29)",
+              "KernelHost.processRequest (/tmp/tmpejfr51s8/lib/program.js:9479:36)",
+              "KernelHost.run (/tmp/tmpejfr51s8/lib/program.js:9442:22)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/tmpejfr51s8/lib/program.js:9443:46)",
+              "runCallback (timers.js:705:18)",
+              "tryOnImmediate (timers.js:676:5)",
+              "processImmediate (timers.js:658:5)"
+            ]
+          }
+        ],
+        "/LambdaCronExample/Rule/AllowEventRuleLambdaCronExampleSingleton4F1DF641": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RuleAllowEventRuleLambdaCronExampleSingleton4F1DF641E5122DD7",
+            "trace": [
+              "Function.addPermission (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/aws-lambda/lib/function-base.js:40:9)",
+              "Object.addLambdaPermission (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/aws-events-targets/lib/util.js:62:17)",
+              "LambdaFunction.bind (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/aws-events-targets/lib/lambda.js:27:16)",
+              "Rule.addTarget (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/aws-events/lib/rule.js:86:36)",
+              "_wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:7970:134)",
+              "Kernel._wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:8582:24)",
+              "ret._ensureSync (/tmp/tmpejfr51s8/lib/program.js:7970:107)",
+              "Kernel._ensureSync (/tmp/tmpejfr51s8/lib/program.js:8563:28)",
+              "Kernel.invoke (/tmp/tmpejfr51s8/lib/program.js:7970:34)",
+              "KernelHost.processRequest (/tmp/tmpejfr51s8/lib/program.js:9479:36)",
+              "KernelHost.run (/tmp/tmpejfr51s8/lib/program.js:9442:22)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/tmpejfr51s8/lib/program.js:9443:46)",
+              "runCallback (timers.js:705:18)",
+              "tryOnImmediate (timers.js:676:5)",
+              "processImmediate (timers.js:658:5)"
+            ]
+          }
+        ],
+        "/LambdaCronExample/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata",
+            "trace": [
+              "new MetadataResource (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/metadata-resource.js:22:30)",
+              "construct (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:128:9)",
+              "visit (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:184:9)",
+              "visit (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:181:9)",
+              "injectMetadataResources (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:117:5)",
+              "Object.synthesize (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:17:5)",
+              "App.synth (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/stage.js:100:41)",
+              "_wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:7970:134)",
+              "Kernel._wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:8582:24)",
+              "ret._ensureSync (/tmp/tmpejfr51s8/lib/program.js:7970:107)",
+              "Kernel._ensureSync (/tmp/tmpejfr51s8/lib/program.js:8563:28)",
+              "Kernel.invoke (/tmp/tmpejfr51s8/lib/program.js:7970:34)",
+              "KernelHost.processRequest (/tmp/tmpejfr51s8/lib/program.js:9479:36)",
+              "KernelHost.run (/tmp/tmpejfr51s8/lib/program.js:9442:22)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/tmpejfr51s8/lib/program.js:9443:46)",
+              "runCallback (timers.js:705:18)",
+              "tryOnImmediate (timers.js:676:5)",
+              "processImmediate (timers.js:658:5)"
+            ]
+          }
+        ],
+        "/LambdaCronExample/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable",
+            "trace": [
+              "new MetadataResource (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/metadata-resource.js:30:35)",
+              "construct (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:128:9)",
+              "visit (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:184:9)",
+              "visit (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:181:9)",
+              "injectMetadataResources (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:117:5)",
+              "Object.synthesize (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/private/synthesis.js:17:5)",
+              "App.synth (/tmp/jsii-kernel-2ReeoW/node_modules/@aws-cdk/core/lib/stage.js:100:41)",
+              "_wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:7970:134)",
+              "Kernel._wrapSandboxCode (/tmp/tmpejfr51s8/lib/program.js:8582:24)",
+              "ret._ensureSync (/tmp/tmpejfr51s8/lib/program.js:7970:107)",
+              "Kernel._ensureSync (/tmp/tmpejfr51s8/lib/program.js:8563:28)",
+              "Kernel.invoke (/tmp/tmpejfr51s8/lib/program.js:7970:34)",
+              "KernelHost.processRequest (/tmp/tmpejfr51s8/lib/program.js:9479:36)",
+              "KernelHost.run (/tmp/tmpejfr51s8/lib/program.js:9442:22)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/tmpejfr51s8/lib/program.js:9443:46)",
+              "runCallback (timers.js:705:18)",
+              "tryOnImmediate (timers.js:676:5)",
+              "processImmediate (timers.js:658:5)"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

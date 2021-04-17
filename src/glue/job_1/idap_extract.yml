@@ -1,0 +1,19 @@
+id: 'IDAP_EXTRACT_TEST'
+command:
+  'name': 'IDAP_EXTRACT_TEST'
+  'python_version': 3
+  'script_location': 's3://shaw-stc-edl-etl-config-playpen/test/glue/spark/__main__.py'
+role: "rolearn"
+default_arguments:
+  '--enable-glue-datacatalog': 'true'
+  '--database': 'true'
+  '--table': 'true'
+  '--save_to': 's3://dest_bucket/'
+allocated_capacity: 10
+description: 'Test Spark Glue ETL'
+glue_version: '2.0'
+max_capacity: 10
+max_retries: 0
+number_of_workers: 1
+timeout: 2880
+worker_type: 'G.1X'
