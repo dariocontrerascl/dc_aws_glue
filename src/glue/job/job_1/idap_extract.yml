@@ -6,6 +6,7 @@ command:
   'script_location': '${glue_jobs_bucket}/job_1/job_1.py'
 role: "arn:aws:iam::124614996455:role/glue_role"
 default_arguments:
+  '--extra-py-files': '${glue_project_zip}'
   '--enable-glue-datacatalog': 'true'
   '--database': 'true'
   '--table': 'true'

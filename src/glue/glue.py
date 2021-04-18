@@ -1,9 +1,8 @@
-from typing import Any, cast, Tuple
+from typing import Any
 
 from .glue_settings import GlueSettings
-from ..constants import StageName
 from ..settings import Settings
-from aws_cdk import aws_ec2, aws_glue, aws_iam, aws_s3_assets, core, aws_s3_deployment, aws_s3
+from aws_cdk import aws_glue, aws_s3_assets, core, aws_s3_deployment, aws_s3
 import os
 import yaml
 
@@ -36,6 +35,26 @@ class GlueStack(core.Stack):
 
         return jobs
 
+    def get_all_trigger(self, directory):
+        triggers = []
+
+        for filename in os.listdir(directory):
+            if filename.__contains__("yml"):
+                get_tg = "%s/%s" % (directory, filename)
+                with open(get_tg) as tg_file:
+                    curr_yaml = tg_file.read()
+
+                    for key, val in self.glue_settings.global_parameters.items():
+                        curr_yaml = curr_yaml.replace(key, val)
+
+                    documents = yaml.full_load(curr_yaml)
+
+                documents['name'] = str(documents['name']).upper()
+                documents['id'] = documents['name']
+                documents['actions'] = [aws_glue.CfnTrigger.ActionProperty(**action) for action in documents['actions']]
+                triggers.append(documents)
+        return triggers
+
     def __init__(self, scope: core.Construct, *, settings: Settings, stage: str, **kwargs: Any, ) -> None:
         ID_STACK = "idap-%s-glue-reporting" % stage
         super().__init__(scope, ID_STACK, **kwargs)
@@ -45,6 +64,11 @@ class GlueStack(core.Stack):
         base_job_directory = os.path.dirname(__file__) + '/job/'
 
         print(self.glue_settings.global_parameters)
+
+        glue_project_zip = aws_s3_assets.Asset(self, "DeployGlueJobProject", path=os.path.dirname(__file__))
+        self.glue_settings.global_parameters["${glue_project_zip}"] = "s3://%s/%s" % (glue_project_zip.s3_bucket_name,
+                                                                                      glue_project_zip.s3_object_key)
+
         jobs = self.get_all_job(base_job_directory)
 
         glue_jobs_bucket = aws_s3.Bucket(self,
@@ -67,3 +91,10 @@ class GlueStack(core.Stack):
                 scope=self,
                 **current_glue_job
             )
+
+        trigger_directory = os.path.dirname(__file__) + '/trigger/'
+        triggers = self.get_all_trigger(trigger_directory)
+
+        for current_tg in triggers:
+            aws_glue.CfnTrigger(self, **current_tg)
+
