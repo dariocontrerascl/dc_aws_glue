@@ -1,19 +1,21 @@
+# glue job config
 id: 'IDAP_EXTRACT_TEST'
+name: 'IDAP_EXTRACT_TEST'
 command:
-  'name': 'IDAP_EXTRACT_TEST'
-  'python_version': 3
-  'script_location': 's3://idap-sources/job_1.py'
-role: "rolearn"
+  'name': 'glueetl'
+  'python_version': '3'
+  'script_location': 's3://my-code-dacl/job_1/job_1.py'
+role: "arn:aws:iam::124614996455:role/glue_role"
 default_arguments:
   '--enable-glue-datacatalog': 'true'
   '--database': 'true'
   '--table': 'true'
-  '--save_to': 's3://dest_bucket/'
-allocated_capacity: 10
+  '--save_to': 's3://ibh-reporting/1/'
 description: 'Test Spark Glue ETL'
 glue_version: '2.0'
-max_capacity: 10
 max_retries: 0
-number_of_workers: 1
+number_of_workers: 3
 timeout: 2880
 worker_type: 'G.1X'
+# s3 files configuration
+# s3_script_destination: 's3://idap-sources/1/'
