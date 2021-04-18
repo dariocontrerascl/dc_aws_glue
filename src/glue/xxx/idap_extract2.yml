@@ -1,10 +1,9 @@
 # glue job config
-id: 'IDAP_EXTRACT_TEST2'
 name: 'IDAP_EXTRACT_TEST2'
 command:
   'name': 'glueetl'
   'python_version': '3'
-  'script_location': 's3://my-code-dacl/xxx/job_2.py'
+  'script_location': 's3://my-code-dacl-%s/glue_jobs/xxx/job_2.py'
 role: "arn:aws:iam::124614996455:role/glue_role"
 default_arguments:
   '--enable-glue-datacatalog': 'true'

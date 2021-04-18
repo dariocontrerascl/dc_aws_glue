@@ -17,5 +17,8 @@ ROOT_PATH = SRC_PATH.parent
 
 # Default stages
 
-StageName = Literal["preview", "staging", "qa", "prod"]
-STAGES: Tuple[StageName, ...] = ("preview", "staging", "qa", "prod")
+StageName = Literal["dev", "prod"]
+STAGES: Tuple[StageName, ...] = ("dev", "prod")
+
+
+print(STAGES)
