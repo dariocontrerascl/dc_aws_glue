@@ -1,51 +1,62 @@
 from typing import Any, cast, Tuple
 from ..settings import Settings
-from aws_cdk import aws_ec2, aws_glue, aws_iam, aws_s3_assets, core
+from aws_cdk import aws_ec2, aws_glue, aws_iam, aws_s3_assets, core, aws_s3_deployment, aws_s3
 import os
 import yaml
 
-
-IDAP = "idap"
-ENVIRONMENT = "glue"
+ID_STACK = "idap-glue-reporting"
 IAM_ROLE_GLUE = "AWSGlueServiceRoleDefault"
 
 
 class GlueStack(core.Stack):
     settings: Settings
 
-    def __get_all_job(self):
-        directory = os.path.dirname(__file__)
+    @staticmethod
+    def get_all_job(directory):
         jobs = []
         for filename in os.listdir(directory):
             curr_folder = os.path.join(directory, filename)
-            if curr_folder.__contains__("job_"):
+            if os.path.isdir(curr_folder):
                 for config in os.listdir(curr_folder):
                     if config.__contains__(".yml"):
                         get_job = "%s/%s" % (curr_folder, config)
                         with open(get_job) as file:
                             documents = yaml.full_load(file)
-                        jobs.append(documents)
+                        s3_script = documents['command']['script_location'].split('/')[-1]
+                        job_script_asset = "%s/%s" % (curr_folder, s3_script)
+                        # s3_script_dest = documents['s3_script_destination']
+                        # del documents['s3_script_destination']
+                        print(documents['command'])
+                        documents['command'] = aws_glue.CfnJob.JobCommandProperty(**documents['command'])
+                        jobs.append((documents, job_script_asset, None))
+
         return jobs
 
     def __init__(self, scope: core.Construct, *, settings: Settings, **kwargs: Any, ) -> None:
-        super().__init__(scope, IDAP, **kwargs)
+        super().__init__(scope, ID_STACK, **kwargs)
+        base_job_directory = os.path.dirname(__file__) + '/job/'
+        jobs = self.get_all_job(base_job_directory)
 
-        jobs = self.__get_all_job()
-        for current_glue_job in jobs:
-            print(1, current_glue_job)
-            job = aws_glue.CfnJob(
+        glue_jobs_bucket = aws_s3.Bucket(self, 'my-code-dacl', bucket_name="my-code-dacl")
+
+        if len(jobs) > 0:
+            project_asset = aws_s3_assets.Asset(self, "ProjectZippedAsset", path=base_job_directory)
+
+            aws_s3_deployment.BucketDeployment(
+                self,
+                'DeployGlueJobsBucket',
+                sources=[aws_s3_deployment.Source.asset(base_job_directory)] + [aws_s3_deployment.Source.asset(project_asset.asset_path)],
+                destination_bucket=glue_jobs_bucket,
+                destination_key_prefix="glue_jobs",
+                prune=False,
+            )
+
+
+
+
+        for current in jobs:
+            current_glue_job = current[0]
+            aws_glue.CfnJob(
                 scope=self,
                 **current_glue_job
-                # id=current_glue_job['command']["name"],
-                # command=current_glue_job['command'],
-                # role= current_glue_job['role'],
-                # default_arguments=current_glue_job['default_arguments'],
-                # allocated_capacity=current_glue_job['allocated_capacity'],
-                # description=current_glue_job['description'],
-                # glue_version=current_glue_job['glue_version'],
-                # max_capacity=current_glue_job['max_capacity'],
-                # max_retries=current_glue_job['max_retries'],
-                # number_of_workers=current_glue_job['number_of_workers'],
-                # timeout=current_glue_job['timeout'],
-                # worker_type=current_glue_job['worker_type']
             )

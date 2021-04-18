@@ -3,14 +3,14 @@ import os
 import yaml
 
 # assign directory
-directory = './'
+directory = './job/'
 
 # itrate over files in
 # that directory
-for filename in os.listdir(directory):
+for filename in os.listdir(directory) :
     f = os.path.join(directory, filename)
     # checking if it is a file
-    if f.__contains__("job_"):
+    if os.path.isdir(f):
         for config in os.listdir(f):
             if config.__contains__(".yml"):
                 get_job = "%s/%s" % (f,config)

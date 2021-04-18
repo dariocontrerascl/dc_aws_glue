@@ -5,6 +5,7 @@ aws-cdk.aws-glue
 aws-cdk.aws_s3_notifications
 aws-cdk.aws-events
 aws-cdk.aws-events-targets
+aws-cdk.aws-s3-deployment
 pydantic
 modules
 pyyaml
