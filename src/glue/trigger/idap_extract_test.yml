@@ -1,0 +1,6 @@
+name: 'IDAP_${env}_EXTRACT_test_TG'
+type: 'SCHEDULED'
+description: 'trigger desc'
+schedule: 'cron(0 3,17,22 * * ? *)'
+actions:
+  - job_name: 'IDAP_${env}_EXTRACT_TEST'
