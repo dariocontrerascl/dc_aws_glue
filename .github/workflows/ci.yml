@@ -24,7 +24,7 @@ jobs:
     needs: init_common_var
     steps:
       - name: Print
-        run: echo "$ {{needs.init_common_var.outputs.ENVIROMENT}}"
+        run: echo "${{needs.init_common_var.outputs.ENVIROMENT}}"
 
 
 #      - name: "Get deploy info"
