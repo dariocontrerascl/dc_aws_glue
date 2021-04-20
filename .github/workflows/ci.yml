@@ -29,14 +29,14 @@ jobs:
           AWS_DEFAULT_REGION: 'us-east-2'
 
       - uses: aws-actions/configure-aws-credentials@v1
-        
+
       - name: Copy files to the test website with the AWS CLI
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: 'us-east-2'
         run: |
-          aws s3 ls
+          echo '1111'
 
 
   aws_glue_jobs_cdk:
