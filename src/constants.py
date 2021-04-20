@@ -21,4 +21,5 @@ StageName = Literal["dev", "prod"]
 STAGES: Tuple[StageName, ...] = ("dev", "prod")
 
 
-print(STAGES)
+# Default parameters
+idap_bucket_project_code = "idap-%s-source-code"

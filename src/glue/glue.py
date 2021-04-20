@@ -71,30 +71,9 @@ class GlueStack(core.Stack):
 
         jobs = self.get_all_job(base_job_directory)
 
-        glue_jobs_bucket = aws_s3.Bucket(self,
-                                         self.glue_settings.base_glue_gubket,
-                                         bucket_name=self.glue_settings.base_glue_gubket)
-
-        if len(jobs) > 0:
-            aws_s3_deployment.BucketDeployment(
-                self,
-                'DeployGlueJobsBucket%s' % stage,
-                sources=[aws_s3_deployment.Source.asset(base_job_directory)],
-                destination_bucket=glue_jobs_bucket,
-                destination_key_prefix=self.glue_settings.BASE_GLUE_JOB_PREFIX,
-                prune=False,
-            )
-
         for current in jobs:
             current_glue_job = current[0]
             aws_glue.CfnJob(
                 scope=self,
                 **current_glue_job
             )
-
-        trigger_directory = os.path.dirname(__file__) + '/trigger/'
-        triggers = self.get_all_trigger(trigger_directory)
-
-        for current_tg in triggers:
-            aws_glue.CfnTrigger(self, **current_tg)
-
