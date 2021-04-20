@@ -29,13 +29,12 @@ jobs:
           AWS_DEFAULT_REGION: 'us-east-2'
 
       - name: Copy files to the test website with the AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: 'us-east-2'
         run: |
-          aws s3 cp ./src/glue/job s3://idap-dev-source-code/glue_jobs/ --recursive
+          aws s3 ls
 
   aws_glue_jobs_cdk:
     needs: ['aws_base_cdk']
