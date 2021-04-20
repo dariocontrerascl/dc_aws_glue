@@ -42,4 +42,4 @@ jobs:
         aws-region: 'us-east-2'
       - name: Copy files to the test website with the AWS CLI
         run: |
-          aws s3 cp . s3://idap-dev-source-code/glue_jobs/ --recursive
+        aws s3 cp . s3://idap-dev-source-code/glue_jobs/ --recursive
