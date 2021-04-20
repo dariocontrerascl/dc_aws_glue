@@ -6,6 +6,20 @@ jobs:
     steps:
       - uses: "actions/checkout@v2.3.4"
 
+      - name: "Get deploy info"
+        id: "deploy_info"
+        run: |
+            set -e
+
+            stages=
+            if [ "${{ github.ref }}" = "refs/heads/master" ]; then
+              stages=prod
+            else
+              stages=dev
+            fi
+            echo "::set-output name=stages::${stages}"
+
+
       - name: cdk diff
         uses: youyo/aws-cdk-github-actions@v2
         with:
