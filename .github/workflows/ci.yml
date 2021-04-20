@@ -1,11 +1,11 @@
 on: [push]
 
 jobs:
-  init_common_var:
+  init:
     runs-on: ubuntu-latest
 
     outputs:
-      ENVIROMENT: ${{ steps.setvars.outputs.env }}
+      ENVIROMENT: ${{ steps.setvars.outputs.ENVIROMENT }}
 
     steps:
       - name: Set Variables
@@ -20,11 +20,11 @@ jobs:
           fi
 
   print:
+    needs: init
     runs-on: ubuntu-latest
-    needs: init_common_var
     steps:
       - name: Print
-        run: echo "${{needs.init_common_var.outputs.ENVIROMENT}}"
+        run: echo "${{needs.init.outputs.ENVIROMENT}}"
 
 
 #      - name: "Get deploy info"
