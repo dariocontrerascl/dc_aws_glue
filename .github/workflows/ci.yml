@@ -28,7 +28,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-2'
 
-        - name: "Get deploy info"
+      - name: "Get deploy info"
         id: "deploy_info"
         run: |
             echo '1111'
