@@ -47,7 +47,7 @@ jobs:
           aws s3 cp ./src/glue/job s3://idap-dev-source-code/glue_jobs/ --recursive
 
   aws_glue_jobs_cdk:
-    needs: ['aws_copy_project']
+    needs: ['aws_base_cdk']
     runs-on: ubuntu-latest
     steps:
       - uses: "actions/checkout@v2.3.4"
