@@ -1,4 +1,4 @@
-on: [push]
+on: [ push ]
 
 jobs:
   init:
@@ -12,98 +12,83 @@ jobs:
         id: setvars
         run: |
           if [[ "${{github.base_ref}}" == "master" || "${{github.ref}}" == "refs/heads/master" ]]; then
-            echo "::set-output name=ENVIROMENT::PROD"
+            echo "::set-output name=ENVIROMENT::prod"
           fi
 
           if [[ "${{github.base_ref}}" != "master" ]]; then
-            echo "::set-output name=ENVIROMENT::DEV"
+            echo "::set-output name=ENVIROMENT::dev"
           fi
 
-  print:
-    needs: init
+  aws_base_cdk:
+    needs: ['init']
     runs-on: ubuntu-latest
     steps:
-      - name: Print
-        run: echo "${{needs.init.outputs.ENVIROMENT}}"
+      - uses: "actions/checkout@v2.3.4"
 
+      - name: cdk diff
+        uses: youyo/aws-cdk-github-actions@v2
+        with:
+          cdk_subcommand: 'diff'
+          cdk_stack: 'idap-${{needs.init.outputs.ENVIROMENT}}-glue-reporting'
+          actions_comment: true
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-2'
 
-#      - name: "Get deploy info"
-#        id: "deploy_info"
-#        run: |
-#            set -e
-#
-#            stages=
-#            if [ "${{ github.ref }}" = "refs/heads/master" ]; then
-#              stages=prod
-#            else
-#              stages=dev
-#            fi
-#            echo "::set-output name=stages::${stages}"
-#
-#
-#      - name: cdk diff
-#        uses: youyo/aws-cdk-github-actions@v2
-#        with:
-#          cdk_subcommand: 'diff'
-#          actions_comment: true
-#        env:
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          AWS_DEFAULT_REGION: 'us-east-2'
-#
-#      - name: cdk deploy
-#        uses: youyo/aws-cdk-github-actions@v2
-#        with:
-#          cdk_subcommand: 'deploy'
-#          cdk_stack: 'idap-dev-glue-reporting'
-#          cdk_args: '--require-approval never'
-#          actions_comment: false
-#        env:
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          AWS_DEFAULT_REGION: 'us-east-2'
-#
-#  aws_copy_project:
-#    needs: ['aws_base_cdk']
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: "actions/checkout@v2.3.4"
-#
-#      - name: aws config
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: 'us-east-2'
-#
-#      - name: Copy files to the test website with the AWS CLI
-#        run: |
-#          aws s3 cp ./src/glue/job s3://idap-dev-source-code/glue_jobs/ --recursive
-#
-#  aws_glue_jobs_cdk:
-#    needs: ['aws_copy_project']
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: "actions/checkout@v2.3.4"
-#
-#      - name: cdk diff
-#        uses: youyo/aws-cdk-github-actions@v2
-#        with:
-#          cdk_subcommand: 'diff'
-#          actions_comment: true
-#        env:
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          AWS_DEFAULT_REGION: 'us-east-2'
-#
-#      - name: cdk deploy
-#        uses: youyo/aws-cdk-github-actions@v2
-#        with:
-#          cdk_subcommand: 'deploy'
-#          cdk_stack: 'idap-dev-glue-reporting'
-#          cdk_args: '--require-approval never'
-#          actions_comment: false
-#        env:
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          AWS_DEFAULT_REGION: 'us-east-2'
+      - name: cdk deploy
+        uses: youyo/aws-cdk-github-actions@v2
+        with:
+          cdk_subcommand: 'deploy'
+          cdk_stack: 'idap-${{needs.init.outputs.ENVIROMENT}}-glue-reporting'
+          cdk_args: '--require-approval never'
+          actions_comment: false
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-2'
+
+  aws_copy_project:
+    needs: [ 'init', 'aws_base_cdk' ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: "actions/checkout@v2.3.4"
+
+      - name: aws config
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-2'
+
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 cp ./src/glue/job s3://idap-dev-source-code/glue_jobs/ --recursive
+
+  aws_glue_jobs_cdk:
+    needs: [ 'init', 'aws_copy_project' ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: "actions/checkout@v2.3.4"
+
+      - name: cdk diff
+        uses: youyo/aws-cdk-github-actions@v2
+        with:
+          cdk_subcommand: 'diff'
+          actions_comment: true
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-2'
+
+      - name: cdk deploy
+        uses: youyo/aws-cdk-github-actions@v2
+        with:
+          cdk_subcommand: 'deploy'
+          cdk_stack: 'idap-dev-glue-reporting'
+          cdk_args: '--require-approval never'
+          actions_comment: false
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-2'
