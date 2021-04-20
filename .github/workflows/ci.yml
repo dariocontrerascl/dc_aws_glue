@@ -31,7 +31,7 @@ jobs:
       - name: "Get deploy info"
         id: "deploy_info"
         run: |
-            echo '1111'
+            aws s3 ls
 
 #  aws_copy_project:
 #    needs: ['aws_base_cdk']
