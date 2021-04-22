@@ -48,7 +48,7 @@ jobs:
         uses: youyo/aws-cdk-github-actions@v2
         with:
           cdk_subcommand: 'deploy'
-          cdk_stack: 'idap-dev-glue-reporting'
+          cdk_stack: 'idap-${{needs.init.outputs.ENVIROMENT}}-glue-reporting'
           cdk_args: '--require-approval never'
           actions_comment: false
         env:
