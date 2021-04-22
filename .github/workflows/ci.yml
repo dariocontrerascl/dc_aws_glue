@@ -19,38 +19,8 @@ jobs:
             echo "::set-output name=ENVIROMENT::dev"
           fi
 
-  aws_base_cdk:
-    needs: ['init']
-    runs-on: ubuntu-latest
-    steps:
-      - uses: "actions/checkout@v2.3.4"
-
-      - name: cdk diff
-        uses: youyo/aws-cdk-github-actions@v2
-        with:
-          cdk_subcommand: 'diff'
-          cdk_stack: 'idap-${{needs.init.outputs.ENVIROMENT}}-glue-reporting'
-          actions_comment: true
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-2'
-
-      - name: cdk deploy
-        uses: youyo/aws-cdk-github-actions@v2
-        with:
-          cdk_subcommand: 'deploy'
-          cdk_stack: 'idap-${{needs.init.outputs.ENVIROMENT}}-glue-reporting'
-          cdk_args: '--require-approval never'
-          actions_comment: false
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-2'
-          DEFAULT_CDK_STAGE: ${{needs.init.outputs.ENVIROMENT}}
-
   aws_copy_project:
-    needs: [ 'init', 'aws_base_cdk' ]
+    needs: [ 'init']
     runs-on: ubuntu-latest
     steps:
       - uses: "actions/checkout@v2.3.4"
@@ -64,7 +34,7 @@ jobs:
 
       - name: Copy files to the test website with the AWS CLI
         run: |
-          aws s3 cp ./src/glue/job s3://idap-dev-source-code/glue_jobs/ --recursive
+          aws s3 cp ./src/glue/job s3://idap-${{needs.init.outputs.ENVIROMENT}}-source-code/glue_jobs/ --recursive
 
   aws_glue_jobs_cdk:
     needs: [ 'init', 'aws_copy_project' ]
