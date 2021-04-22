@@ -34,7 +34,9 @@ jobs:
 
       - name: Copy files to the test website with the AWS CLI
         run: |
+          zip -r IDAP_GLUE.zip src -i '*.py'
           aws s3 cp ./src/glue/job s3://idap-${{needs.init.outputs.ENVIROMENT}}-source-code/glue_jobs/ --recursive
+          aws s3 cp IDAP_GLUE.zip s3://idap-${{needs.init.outputs.ENVIROMENT}}-source-code/glue_jobs/
 
   aws_glue_jobs_cdk:
     needs: [ 'init', 'aws_copy_project' ]
